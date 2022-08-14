@@ -14,6 +14,6 @@ echo enchantedshulkers.rubixdev.de > CNAME
 git init -b master
 git add -A
 git commit -m 'deploy'
-git push -f git@github.com:RubixDev/enchantedshulkers-pack-patcher.git master:gh-pages
+git push -f git@github.com:RubixDev/enchantedshulkers-pack-patcher.git master:deploy
 
 cd -
