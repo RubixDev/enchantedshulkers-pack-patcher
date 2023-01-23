@@ -61,6 +61,10 @@
                 `assets/enchantedshulkers/textures/entity/shulker/closed_shulker${color}.png`,
                 buf,
             )
+            pack.file(
+                `assets/minecraft/textures/entity/shulker/closed_shulker${color}.png`,
+                buf,
+            )
         }
 
         // ender chest
@@ -85,6 +89,10 @@
             if (buf !== undefined) {
                 pack.file(
                     'assets/enchantedshulkers/textures/entity/chest/closed_ender.png',
+                    buf,
+                )
+                pack.file(
+                    'assets/minecraft/textures/entity/chest/closed_ender.png',
                     buf,
                 )
             }
