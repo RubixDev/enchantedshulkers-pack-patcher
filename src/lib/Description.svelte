@@ -11,7 +11,7 @@
         On this page you can patch any resource pack to provide the required textures to
         EnchantedShulkers, so that closed enchanted containers also use the resource
         pack's textures instead of the vanilla ones. To do that, simply select your
-        resource pack with the 'Choose File' button below and the click the 'Patch'
+        resource pack with the 'Choose File' button below and then click the 'Patch'
         button.
     </p>
 </div>
