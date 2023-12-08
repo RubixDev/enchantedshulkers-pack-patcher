@@ -43,15 +43,20 @@
         'netherite',
     ]
 
+    function log(msg: string) {
+        step = msg
+        console.log(msg)
+    }
+
     async function patch() {
-        step = 'unpack zip'
+        log('unpack zip')
         const pack = await JSZip.loadAsync(file)
 
         // shulker boxes
         for (const material of reinforcingMaterials) {
             for (const color of dyeColors) {
                 const logImgName = `${material === '' ? '' : `reinforced ${material} `}shulker${color}.png`
-                step = `read ${logImgName}`
+                log(`read ${logImgName}`)
                 let basePath = material === '' ? 'assets/minecraft/textures/entity/shulker'
                     : `assets/reinfshulker/textures/entity/reinforced_shulker/${material}`
                 let buf = await pack
@@ -61,13 +66,13 @@
                 const img = await Jimp.read(Buffer.of(...buf))
                 const scale = img.getWidth() / 64
 
-                step = `patch ${logImgName}`
+                log(`patch ${logImgName}`)
                 img.blit(img, 32 * scale, 0, 32 * scale, 28 * scale, 16 * scale, 16 * scale)
                 img.blit(img, 0, 24 * scale, 0, 44 * scale, 64 * scale, 8 * scale)
 
                 img.crop(0, 0, 64 * scale, 32 * scale)
 
-                step = `write ${logImgName}`
+                log(`write ${logImgName}`)
                 buf = await img.getBufferAsync(Jimp.MIME_PNG)
                 if (buf === undefined) continue
                 basePath = material === '' ? 'assets/enchantedshulkers/textures/entity/shulker'
@@ -87,7 +92,7 @@
         }
 
         // ender chest
-        step = 'read ender.png'
+        log('read ender.png')
         let buf = await pack
             .file('assets/minecraft/textures/entity/chest/ender.png')
             ?.async('uint8array')
@@ -95,7 +100,7 @@
             const img = await Jimp.read(Buffer.of(...buf))
             const scale = img.getWidth() / 64
 
-            step = 'patch ender.png'
+            log('patch ender.png')
             img.blit(img, 14 * scale, 0, 14 * scale, 19 * scale, 14 * scale, 14 * scale)
             img.blit(img, 0, 59 * scale, 0, 14 * scale, 56 * scale, 5 * scale)
             img.blit(img, 0, 14 * scale, 0, 33 * scale, 56 * scale, 10 * scale)
@@ -103,7 +108,7 @@
 
             img.crop(0, 0, 64 * scale, 32 * scale)
 
-            step = 'write closed_ender.png'
+            log('write closed_ender.png')
             buf = await img.getBufferAsync(Jimp.MIME_PNG)
             if (buf !== undefined) {
                 pack.file(
@@ -117,7 +122,7 @@
             }
         }
 
-        step = 'save file'
+        log('save file')
         const blob = await pack.generateAsync({ type: 'blob' })
         saveAs(blob, `${file.name.replace(/\.zip$/, '')}-patched.zip`)
         step = ''
