@@ -34,37 +34,56 @@
         '_yellow',
     ]
 
+    const reinforcingMaterials: string[] = [
+        '',
+        'copper',
+        'diamond',
+        'gold',
+        'iron',
+        'netherite',
+    ]
+
     async function patch() {
         step = 'unpack zip'
         const pack = await JSZip.loadAsync(file)
 
         // shulker boxes
-        for (const color of dyeColors) {
-            step = `read shulker${color}.png`
-            let buf = await pack
-                .file(`assets/minecraft/textures/entity/shulker/shulker${color}.png`)
-                ?.async('uint8array')
-            if (buf === undefined) continue
-            const img = await Jimp.read(Buffer.of(...buf))
-            const scale = img.getWidth() / 64
+        for (const material of reinforcingMaterials) {
+            for (const color of dyeColors) {
+                const logImgName = `${material === '' ? '' : `reinforced ${material} `}shulker${color}.png`
+                step = `read ${logImgName}`
+                let basePath = material === '' ? 'assets/minecraft/textures/entity/shulker'
+                    : `assets/reinfshulker/textures/entity/reinforced_shulker/${material}`
+                let buf = await pack
+                    .file(`${basePath}/shulker${color}.png`)
+                    ?.async('uint8array')
+                if (buf === undefined) continue
+                const img = await Jimp.read(Buffer.of(...buf))
+                const scale = img.getWidth() / 64
 
-            step = `patch shulker${color}.png`
-            img.blit(img, 32 * scale, 0, 32 * scale, 28 * scale, 16 * scale, 16 * scale)
-            img.blit(img, 0, 24 * scale, 0, 44 * scale, 64 * scale, 8 * scale)
+                step = `patch ${logImgName}`
+                img.blit(img, 32 * scale, 0, 32 * scale, 28 * scale, 16 * scale, 16 * scale)
+                img.blit(img, 0, 24 * scale, 0, 44 * scale, 64 * scale, 8 * scale)
 
-            img.crop(0, 0, 64 * scale, 32 * scale)
+                img.crop(0, 0, 64 * scale, 32 * scale)
 
-            step = `write closed_shulker${color}.png`
-            buf = await img.getBufferAsync(Jimp.MIME_PNG)
-            if (buf === undefined) continue
-            pack.file(
-                `assets/enchantedshulkers/textures/entity/shulker/closed_shulker${color}.png`,
-                buf,
-            )
-            pack.file(
-                `assets/minecraft/textures/entity/shulker/closed_shulker${color}.png`,
-                buf,
-            )
+                step = `write ${logImgName}`
+                buf = await img.getBufferAsync(Jimp.MIME_PNG)
+                if (buf === undefined) continue
+                basePath = material === '' ? 'assets/enchantedshulkers/textures/entity/shulker'
+                    : `assets/enchantedshulkers/textures/entity/reinforced_shulker/${material}`
+                pack.file(
+                    `${basePath}/closed_shulker${color}.png`,
+                    buf,
+                )
+                // was needed for some versions
+                if (material === '') {
+                    pack.file(
+                        `assets/minecraft/textures/entity/shulker/closed_shulker${color}.png`,
+                        buf,
+                    )
+                }
+            }
         }
 
         // ender chest
